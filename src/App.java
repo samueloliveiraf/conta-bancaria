@@ -10,9 +10,10 @@ public class App {
 
     public static void main(String[] args) {
         Map<String, ContaBancaria> contas = new HashMap<>();
+        boolean sair = false;
         Scanner sc = new Scanner(System.in);
 
-        while (true) {
+        while (!sair) {
             System.out.println("\n----- Menu -----");
             System.out.println("1. Criar nova conta");
             System.out.println("2. Acessar conta existente");
@@ -20,61 +21,83 @@ public class App {
             System.out.print("Escolha uma opção: ");
             int opcao = sc.nextInt();
 
-            if (opcao == 1) {
-                String numeroConta = gerarNumeroConta();
-                System.out.print("Digite a senha da nova conta: ");
-                String senhaConta = sc.next();
-                contas.put(numeroConta, new ContaBancaria(numeroConta, senhaConta));
-                System.out.println("Nova conta criada com sucesso! Número da conta: " + numeroConta);
-            } else if (opcao == 2) {
-                System.out.print("Digite o número da conta: ");
-                String numeroConta = sc.next();
-                ContaBancaria conta = contas.get(numeroConta);
-                if (conta != null) {
-                    System.out.print("Digite a senha da conta: ");
+            switch (opcao) {
+                
+                case 1:
+                    String numeroConta = gerarNumeroConta();
+                    System.out.print("Digite a senha da nova conta: ");
                     String senhaConta = sc.next();
-                    if (conta.verificarSenha(senhaConta)) {
-                        while (true) {
-                            System.out.println("\n----- Menu da Conta " + numeroConta + " -----");
-                            System.out.println("1. Depositar");
-                            System.out.println("2. Sacar");
-                            System.out.println("3. Consultar Saldo");
-                            System.out.println("4. Voltar ao menu principal");
-                            System.out.print("Escolha uma opção: ");
-                            int opcaoConta = sc.nextInt();
+                    contas.put(numeroConta, new ContaBancaria(numeroConta, senhaConta));
+                    System.out.println("Nova conta criada com sucesso! Número da conta: " + numeroConta);
+                    break;
 
-                            if (opcaoConta == 1) {
-                                System.out.print("Digite o valor a ser depositado: ");
-                                double valor = sc.nextDouble();
-                                conta.depositar(valor);
-                            } else if (opcaoConta == 2) {
-                                System.out.print("Digite o valor a ser sacado: ");
-                                double valor = sc.nextDouble();
-                                conta.sacar(valor);
-                            } else if (opcaoConta == 3) {
-                                double saldoAtual = conta.consultarSaldo();
-                                System.out.println("Saldo atual: R$" + saldoAtual);
-                            } else if (opcaoConta == 4) {
-                                break;
-                            } else {
-                                System.out.println("Opção inválida. Tente novamente.");
+                case 2:
+                    System.out.print("Digite o número da conta: ");
+                    String numeroContaAtual = sc.next();
+                    ContaBancaria conta = contas.get(numeroContaAtual);
+
+                    if (conta != null) {
+                        System.out.print("Digite a senha da conta: ");
+                        String senhaContaAtual = sc.next();
+                        if (conta.verificarSenha(senhaContaAtual)) {
+                            boolean sairConfig = false;
+
+                            while (!sairConfig) { 
+                                System.out.println("\n----- Menu da Conta " + numeroContaAtual + " -----");
+                                System.out.println("1. Depositar");
+                                System.out.println("2. Sacar");
+                                System.out.println("3. Consultar Saldo");
+                                System.out.println("4. Voltar ao menu principal");
+                                System.out.print("Escolha uma opção: ");
+                                int opcaoConta = sc.nextInt();
+                                
+                                switch(opcaoConta) {
+                                    case 1:
+                                        System.out.print("Digite o valor a ser depositado: ");
+                                        double valorDeposito = sc.nextDouble();
+                                        conta.depositar(valorDeposito);
+                                        break;
+
+                                    case 2:
+                                        System.out.print("Digite o valor a ser sacado: ");
+                                        double valorSacar = sc.nextDouble();
+                                        conta.sacar(valorSacar);
+                                        break;
+
+                                    case 3:
+                                        double saldoAtual = conta.consultarSaldo();
+                                        System.out.println("Saldo atual: R$" + saldoAtual);
+                                        break;
+                                    
+                                    case 4:
+                                        sairConfig = true;
+                                        break;
+
+                                    default:
+                                        System.out.println("Opção inválida. Tente novamente.");
+
+                                }
+
                             }
+                        } else {
+                            System.out.println("Senha incorreta. Acesso não autorizado.");
                         }
                     } else {
-                        System.out.println("Senha incorreta. Acesso não autorizado.");
+                        System.out.println("Conta não encontrada...");
                     }
-                } else {
-                    System.out.println("Conta não encontrada.");
-                }
-            } else if (opcao == 3) {
-                System.out.println("Encerrando o programa...");
-                break;
-            } else {
-                System.out.println("Opção inválida. Tente novamente.");
-            }
-        }
 
-        sc.close();
+                    break;
+                
+                case 3:
+                    System.out.println("Saindo... \n");
+                    sair = true;
+                    sc.close();
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+
+        }
     }
 
     private static String gerarNumeroConta() {
